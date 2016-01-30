@@ -4,7 +4,7 @@ From adding a custom background-image, up to highlighting staff-posts and other 
 
 ####License
 ![Alt Text](https://www.gnu.org/graphics/gplv3-88x31.png)
-The contents of this projects are licensed under the GNU/GPL v3 License which is part of the contents or can be found under the following link: https://www.gnu.org/licenses/gpl-3.0.txt
+The code-contents of this projects are licensed under the GNU/GPL v3 License which is part of the contents or can be found under the following link: https://www.gnu.org/licenses/gpl-3.0.txt
 
 --
 ####Third-Party content
