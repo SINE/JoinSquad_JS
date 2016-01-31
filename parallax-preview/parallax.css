@@ -1,0 +1,20 @@
+#background {
+  /*background: linear-gradient(to bottom, rgba(0,0,0,0.5) 250px,rgba(0,0,0,0.25) 400px, rgba(0,0,0,0.25) 90%, rgba(0,0,0,0.8) 100%),
+  url("http://i.imgur.com/8Czg5RN.png") repeat fixed,
+  url("http://i.imgur.com/NxvOcMH.jpg") no-repeat fixed;*/
+
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 250px, rgba(0,0,0,0.6) 400px, rgba(0,0,0,0.25) 100%),
+  url("http://i.imgur.com/85fQG98.png") repeat fixed,
+  url("http://i.imgur.com/NxvOcMH.jpg") no-repeat fixed;
+  background-size: auto auto, auto auto, cover;
+  background-blend-mode: multiply, soft-light;
+
+  filter: grayscale(1);
+
+}
+
+#content {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
