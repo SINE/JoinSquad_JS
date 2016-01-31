@@ -7,7 +7,7 @@
 // @grant       GM_getResourceText
 // @grant       GM_addStyle
 // @require			https://code.jquery.com/jquery-2.2.0.min.js
-// @resource		customCSS parallax.css
+// @resource		customCSS parallax2.css
 // @noframes
 // ==/UserScript==
 
