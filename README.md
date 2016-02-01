@@ -1,10 +1,10 @@
-#JoinSquad_JS
+![GPLv3 Logo](http://i.imgur.com/fpRDXAN.png)
+
 This repository contains a collection of Javascript-based projects and their necessary resources, and is dedicated to JoinSquad.com clientside forum-customization for the visitor's web-browser.
 From adding a custom background-image, up to highlighting staff-posts and other things, each one has a dedicated set of functions and features. See for yourself and leave some constructive feedback if you encounter any issues!
---
 
 ####License
-![Alt Text](https://www.gnu.org/graphics/gplv3-88x31.png)
+![GPLv3 Logo](https://www.gnu.org/graphics/gplv3-88x31.png)
 The code-contents (exceptions are defined below, in the third-party-content section) of these projects are licensed under the GNU/GPL v3 License which is part of the according repository-sublocations or can be found under the following link: https://www.gnu.org/licenses/gpl-3.0.txt
 
 All audio-content (exceptions of this are defined below, in the third-party-content section) of this repository and it's projects is licensed under Creative Commons (CC BY-NC-SA 4.0) which is part of the according repository-sublocations or can be found under the following link http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt
