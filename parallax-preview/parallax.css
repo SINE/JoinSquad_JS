@@ -3,7 +3,9 @@
   url("http://i.imgur.com/8Czg5RN.png") repeat fixed,
   url("http://i.imgur.com/NxvOcMH.jpg") no-repeat fixed;*/
 
-  background:  #000 !important;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 250px, rgba(0,0,0,0.6) 400px, rgba(0,0,0,0.25) 100%),
+  url("http://i.imgur.com/85fQG98.png") repeat fixed,
+  url("http://i.imgur.com/NxvOcMH.jpg") no-repeat fixed;
   background-size: auto auto, auto auto, cover;
   background-blend-mode: multiply, soft-light;
 

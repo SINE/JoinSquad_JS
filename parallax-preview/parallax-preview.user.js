@@ -5,12 +5,12 @@
 // @include     http://forums.joinsquad.com/*
 // @supportURL   https://github.com/SINE/Joinsquad_JS/issues
 //@updateURL     https://github.com/SINE/JoinSquad_JS/raw/master/parallax-preview/parallax-preview.meta.js
-// @version     4
+// @version     5
 // @run-at			document-start
 // @grant       GM_getResourceText
 // @grant       GM_addStyle
 // @require			https://code.jquery.com/jquery-2.2.0.min.js
-// @resource		customCSS parallax2.css
+// @resource		customCSS parallax.css
 // @noframes
 // ==/UserScript==
 
