@@ -8,10 +8,10 @@
   url("http://i.imgur.com/NxvOcMH.jpg") no-repeat fixed;
   background-size: auto auto, auto auto, cover;
   background-blend-mode: multiply, soft-light;
-
-  filter: grayscale(1);
+  
+	filter: gray;
+	filter: grayscale(1);
     -webkit-filter: grayscale(1);
-
 }
 
 #content {
