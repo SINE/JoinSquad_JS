@@ -5,7 +5,7 @@
 // @include     http://forums.joinsquad.com/*
 // @supportURL   https://github.com/SINE/Joinsquad_JS/issues
 //@updateURL     https://github.com/SINE/JoinSquad_JS/raw/master/parallax-preview/parallax-preview.meta.js
-// @version     2
+// @version     3
 // @run-at			document-start
 // @grant       GM_getResourceText
 // @grant       GM_addStyle
