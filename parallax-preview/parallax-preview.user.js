@@ -1,8 +1,11 @@
 // ==UserScript==
 // @name        JoinSQUAD_JS parallax-preview
 // @namespace   github.com/SINE
+//@license       https://www.gnu.org/licenses/gpl-3.0.txt
 // @include     http://forums.joinsquad.com/*
-// @version     1
+// @supportURL   https://github.com/SINE/Joinsquad_JS/issues
+//@updateURL     https://github.com/SINE/JoinSquad_JS/raw/master/parallax-preview/parallax-preview.meta.js
+// @version     2
 // @run-at			document-start
 // @grant       GM_getResourceText
 // @grant       GM_addStyle
