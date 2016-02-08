@@ -7,7 +7,8 @@ From adding a custom background-image, up to highlighting staff-posts and other 
 ![GPLv3 Logo](https://www.gnu.org/graphics/gplv3-88x31.png)
 The code-contents (exceptions are defined below, in the third-party-content section) of these projects are licensed under the GNU/GPL v3 License which is part of the according repository-sublocations or can be found under the following link: https://www.gnu.org/licenses/gpl-3.0.txt
 
-All audio-content (exceptions of this are defined below, in the third-party-content section) of this repository and it's projects is licensed under Creative Commons (CC BY-NC-SA 4.0) which is part of the according repository-sublocations or can be found under the following link http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt
+![CC BY-NC-SA-4.0 Logo](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)
+All audio-content/media content (exceptions of this are defined below, in the third-party-content section) of this repository and it's projects is licensed under Creative Commons (CC BY-NC-SA 4.0) which is part of the according repository-sublocations or can be found under the following link http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt
 
 ####Third-Party content
 * Multiple of the project's scripts make use of third-party libraries, these libraries are not directly implemented into the project but rather are automatically loaded from their licensed distributors. These libraries do not fall under this project's license terms and are in no way related to this project's creator.
