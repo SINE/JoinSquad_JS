@@ -17,4 +17,4 @@ All audio-content (exceptions of this are defined below, in the third-party-cont
 * Functions with out-commented links are probably copied from those sources. These functions fall under the license terms defined by the respective owner/publisher of these snippets.
 
 ####Disclaimer
-All code, scripts (as well as parts of code) are provided as-they-are without any kind of warranties, use them at your own risk. This project is in no way related to the company Offworld Industries or the trademark "SQUAD".
+All code, scripts (as well as parts of code), media files and all other files in this repository are provided as-they-are without any kind of warranties, use them at your own risk. This project is in no way related to the company Offworld Industries or the trademark "SQUAD".
