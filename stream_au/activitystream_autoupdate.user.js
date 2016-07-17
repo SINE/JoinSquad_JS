@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate
 // @namespace   github.com/SINE
-// @version     1.2
+// @version     1.3
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @require			https://code.jquery.com/jquery-1.7.1.min.js
 // @require			https://raw.githubusercontent.com/goldfire/howler.js/master/howler.min.js
@@ -19,7 +19,8 @@ if( !nomultirun() ) { throw new Error("There is already a script attached! Stopp
 
 // this var function line MUST be at top before being called the first time, otherwise it will NOT work!
 var UnixNow_Seconds = function() { return Math.round((new Date()).getTime() / 1000); };
-
+var dochirp = true;
+var waitingforchirp=false;
 
 $(document).ready(function() {
 
@@ -46,7 +47,7 @@ function chirp(){
   notification.volume = 0.1;
   var lastchirp = Number(getCookie("lastchirpactivitystream"));
 
-  if( (UnixNow_Seconds > (lastchirp+0)) || !(lastchirp) ) {
+  if( (UnixNow_Seconds > (lastchirp+30)) || !(lastchirp) ) {
     setCookie("lastchirpactivitystream", UnixNow_Seconds, 1);
 
     notification.play();
@@ -62,35 +63,50 @@ function handleMutations(mutations) {
 		if (!mutation.addedNodes || mutation.addedNodes.length === 0) {	console.log("mutation exception, length null or no added nodes! returning!");	return;	}
 		else console.log("added nodes length: "+mutation.addedNodes.length);
 
-		if( mutation.addedNodes.length > 1 ){
+		if( mutation.addedNodes.length > 1 ) {
 			makeArray(mutation.addedNodes).forEach(function (node) {
-						pre_handle_activitybutton(node);
+        if (node.nodeName.toLowerCase() === 'li') {
+          pre_handle_founditem(node);
+				}  else {
+          console.log( "nodename not li, but: "+node.nodeName.toLowerCase() );
+        }
 			});
 		} else {
-        pre_handle_activitybutton(node);
-		}
+      if (node.nodeName.toLowerCase() === 'li') {
+        pre_handle_founditem(node);
+      } else {
+        console.log( "nodename not li, but: "+node.nodeName.toLowerCase() );
+      }
+    }
 	});
 }
 
-function pre_handle_activitybutton(node) {
-    //console.log("pre_handle_activitybutton");
+function pre_handle_founditem(node) {
+
+    //console.log("pre_handle_founditem");
 		var loadMoreButtons = node.parentElement.querySelectorAll(".ipsStreamItem_loadMore");
+
+    if(toString(node.nodeValue).search("liked") === -1) {
+    //  console.log("content that is not a like was found > chirp.");
+    } else {
+    //  console.log("content that is a like was found -> no chirp");
+      dochirp = false;
+    }
+    if( !waitingforchirp ) {
+      waitingforchirp = true;
+      setTimeout(function(){  if(dochirp===false){dochirp=true;}else{chirp();}  waitingforchirp=false; },100);
+    }
+
 		//console.log("loadmore: "+loadMoreButtons.length);
-		if( loadMoreButtons ) {
+		if( loadMoreButtons.length >= 1 ) {
+      //alert("loadmore buttons array!");
 			loadMoreButtons = makeArray( loadMoreButtons );
 			loadMoreButtons.forEach(function(loadMoreButton){
-				//console.log("loadmore button found!");
-				handle_activitybutton(loadMoreButton);
+			//	alert("loadmore button found! > clicking.");
+        loadMoreButton.click();
 			});
 		}
-}
 
-function handle_activitybutton(loadMoreButton) {
-  //console.log("handle_activitybutton loadMoreButton: " + loadMoreButton);
-
-  loadMoreButton.click();
-  chirp();
-  //console.log("handle_activitybutton end");
 }
 
 function makeArray(o) {
