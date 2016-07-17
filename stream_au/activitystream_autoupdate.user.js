@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate
 // @namespace   github.com/SINE
-// @version     1.1
+// @version     1.2
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @require			https://code.jquery.com/jquery-1.7.1.min.js
 // @require			https://raw.githubusercontent.com/goldfire/howler.js/master/howler.min.js
