@@ -14,9 +14,10 @@
 
 this.$ = this.jQuery = jQuery.noConflict(true);
 
-//console.log("ActivitystreamAutoUpdate script start");
+console.log("ActivitystreamAutoUpdate script start");
 if( !nomultirun() ) { throw new Error("There is already a script attached! Stopping."); }
 
+// this var function line MUST be at top before being called the first time, otherwise it will NOT work!
 var UnixNow_Seconds = function() { return Math.round((new Date()).getTime() / 1000); };
 
 
@@ -41,17 +42,13 @@ function start() {
 /**                 FUNCTIONS                      **/
 
 function chirp(){
-  //alert("gonna try chirping #1");
   var notification = new Audio(GM_getResourceURL("chirpnotific1"));
   notification.volume = 0.1;
   var lastchirp = Number(getCookie("lastchirpactivitystream"));
-  //alert("cookie lastchirp: "+getCookie("lastchirp"));
-  //alert("before timecheck");
-  //alert("unixnow difference? "+(UnixNow_Seconds > (lastchirp+0)).toString()+" notlastchirp?: "+(!(lastchirp)).toString() );
 
   if( (UnixNow_Seconds > (lastchirp+0)) || !(lastchirp) ) {
     setCookie("lastchirpactivitystream", UnixNow_Seconds, 1);
-    alert("popping");
+
     notification.play();
   } else {
     console.log("not ready for chirp");
@@ -61,20 +58,15 @@ function chirp(){
 
 function handleMutations(mutations) {
 	mutations.forEach(function (mutation) {
-		//console.log(	"---mutation---: \nadded nodes: "+mutation.addedNodes+"\nremoved nodes: "+mutation.removedNodes+"\ntype:"+mutation.type+"\n---mutation info end---");
+		console.log(	"---mutation---: \nadded nodes: "+mutation.addedNodes+"\nremoved nodes: "+mutation.removedNodes+"\ntype:"+mutation.type+"\n---mutation info end---");
 		if (!mutation.addedNodes || mutation.addedNodes.length === 0) {	console.log("mutation exception, length null or no added nodes! returning!");	return;	}
 		else console.log("added nodes length: "+mutation.addedNodes.length);
 
 		if( mutation.addedNodes.length > 1 ){
-      //console.log("addednodes more than 1");
 			makeArray(mutation.addedNodes).forEach(function (node) {
-        //console.log("foreach node round");
 						pre_handle_activitybutton(node);
 			});
 		} else {
-      //console.log("addednodes is 1");
-			//console.log(	"addedNode[0]: "+mutation.addedNodes[0]	);
-				//console.log("Node is div!");
         pre_handle_activitybutton(node);
 		}
 	});
@@ -127,17 +119,12 @@ function nomultirun() {
 	}
 }
 
-
-
-
-
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     var expires = "expires="+ d.toUTCString();
     document.cookie = cname + "=" + cvalue + "; " + expires;
 }
-
 
 function getCookie(cname) {
     var name = cname + "=";
