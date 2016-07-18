@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate
 // @namespace   github.com/SINE
-// @version     1.3
+// @version     1.4
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @require			https://code.jquery.com/jquery-1.7.1.min.js
 // @require			https://raw.githubusercontent.com/goldfire/howler.js/master/howler.min.js
@@ -83,13 +83,13 @@ function handleMutations(mutations) {
 
 function pre_handle_founditem(node) {
 
-    //console.log("pre_handle_founditem");
 		var loadMoreButtons = node.parentElement.querySelectorAll(".ipsStreamItem_loadMore");
 
-    if(toString(node.nodeValue).search("liked") === -1) {
-    //  console.log("content that is not a like was found > chirp.");
-    } else {
-    //  console.log("content that is a like was found -> no chirp");
+    if(node.querySelector(".ipsStreamItem_header")) {
+      console.log("content that is not a like was found > chirp.");
+      dochirp = true;
+  } else if (node.querySelector(".ipsStreamItem_action")){
+      console.log("content that is a like was found -> no chirp");
       dochirp = false;
     }
     if( !waitingforchirp ) {
@@ -97,12 +97,9 @@ function pre_handle_founditem(node) {
       setTimeout(function(){  if(dochirp===false){dochirp=true;}else{chirp();}  waitingforchirp=false; },100);
     }
 
-		//console.log("loadmore: "+loadMoreButtons.length);
 		if( loadMoreButtons.length >= 1 ) {
-      //alert("loadmore buttons array!");
 			loadMoreButtons = makeArray( loadMoreButtons );
 			loadMoreButtons.forEach(function(loadMoreButton){
-			//	alert("loadmore button found! > clicking.");
         loadMoreButton.click();
 			});
 		}
