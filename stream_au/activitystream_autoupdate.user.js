@@ -1,13 +1,14 @@
 // ==UserScript==
-// @name        JoinSquad Stream Autoupdate
+// @name        JoinSquad Stream Autoupdate ALPHA
 // @namespace   github.com/SINE
-// @version     1.4
+// @version     1.5
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @require			https://code.jquery.com/jquery-1.7.1.min.js
 // @require			https://raw.githubusercontent.com/goldfire/howler.js/master/howler.min.js
 // @resource		chirpnotific1 https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/media/soundeffect-pop.wav
 // @include     http://forums.joinsquad.com/discover/*
 // @grant       GM_getResourceURL
+// @grant       GM_xmlhttpRequest
 // @run-at			document-end
 // @noframe
 // ==/UserScript==
@@ -30,13 +31,18 @@ $(document).ready(function() {
 
 
 function start() {
+  activitystream_noautoupdate = (document.querySelector("#elStreamUpdateMsg").className.search("ipsHide") > -1);
+  if( activitystream_noautoupdate ) {
+    alert("activitystream no autoupdate, enabling interval");
+     setInterval(function(){activitystream_workaround_update();}, 10000);
+  }
+
   var listWrapper = document.getElementsByClassName("ipsStream")[0];
   if( listWrapper !== null ) {
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     var observer = new MutationObserver(handleMutations);
     observer.observe(listWrapper, {childList: true, subtree: false});
   }
-
 }
 
 /** ********************************************** **/
@@ -152,4 +158,68 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+
+
+function activitystream_workaround_update() {
+
+  var OLDipsStreamItems = document.body.querySelectorAll("ol.ipsStream > li.ipsStreamItem");
+  var OLDipsStreamFirstItem = OLDipsStreamItems[0];
+
+//console.log("oldipsStreamFirstItem: "+OLDipsStreamFirstItem);
+//console.log("OLDipsStreamFirstItem.querySelector('.ipsStreamItem_title a')"+OLDipsStreamFirstItem.querySelector(".ipsStreamItem_title a"));
+
+  //console.log("OLDipsStreamFirstItem:"+OLDipsStreamFirstItem);
+
+    GM_xmlhttpRequest({
+       url: window.location.href,
+       method: "GET",
+       synchronous: false,
+       headers: { "Accept": "text/plain" },
+       timeout: 5000,
+       onload: function(response) {
+          console.log("HTTP response received!");
+           rspDoc= (new DOMParser()).parseFromString( response.responseText, 'text/html');
+           if( rspDoc.body.querySelector("ol.ipsStream > li.ipsStreamItem .ipsStreamItem_title a").toString().localeCompare(OLDipsStreamFirstItem.querySelector(".ipsStreamItem_title a").toString()) !== 0 )
+           {
+             console.log("http request finished > newest item isn't old item");
+             NEWipsStreamItems = rspDoc.body.querySelectorAll("ol.ipsStream > li.ipsStreamItem");
+             console.log("NEWipsStreamItems.length: "+NEWipsStreamItems.length );
+             var addactivities_cache = [];
+             var i_old = 0;
+             if( NEWipsStreamItems.length >= 1 ) {
+               for(i=0; i<NEWipsStreamItems.length-1; i++) {
+              //   i_old = i_old + 1;
+                 console.log("inside for loop, i: "+i);
+                  var oldItemLink = OLDipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
+                  var newItemLink = NEWipsStreamItems[i].querySelector(".ipsStreamItem_title a").toString();
+                  console.log("oldItemLink: "+oldItemLink);
+                  console.log("newItemLink: "+newItemLink);
+
+                 if( oldItemLink.localeCompare(newItemLink) !== 0 ) {
+                   console.log("trying to insert activity");
+                  //console.log("trying to insert activity - NEWipsStreamItems[i].outerHTML: "+NEWipsStreamItems[i].innerHTML+" // OLDipsStreamFirstItem: "+OLDipsStreamFirstItem);
+                  addactivities_cache.push( NEWipsStreamItems[i].outerHTML );
+                  //i_old = i_old - 1;
+                 } else {
+                   console.log("inside for loop, breaking @ i: "+i);
+                   break;
+                 }
+               }
+            //  console.log("cache anwenden: ");
+               addactivities_cache.forEach(function (this_activity) {
+                 console.log("cache anwenden this activity: "+this_activity);
+                 $(this_activity).insertBefore( OLDipsStreamFirstItem );
+               });
+               if(addactivities_cache.length >= 1) {chirp();}
+               console.log("cache angewendet.");
+
+             }
+
+           } else {
+             //console.log("http request finished > newest item is old item");
+           }
+         //console.log("HTTP response parsed");
+       }
+     });
 }
