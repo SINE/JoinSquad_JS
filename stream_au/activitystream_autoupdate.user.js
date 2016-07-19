@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate ALPHA
 // @namespace   github.com/SINE
-// @version     1.6.2
+// @version     1.6.3
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @require			https://code.jquery.com/jquery-1.7.1.min.js
-// @require			https://raw.githubusercontent.com/goldfire/howler.js/master/howler.min.js
+// @require			https://raw.githubusercontent.com/goldfire/howler.js/master/dist/howler.min.js
 // @resource		chirpnotific1 https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/media/soundeffect-pop.wav
 // @include     http://forums.joinsquad.com/discover/*
 // @grant       GM_getResourceURL
