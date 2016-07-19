@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate ALPHA
 // @namespace   github.com/SINE
-// @version     1.5.1
+// @version     1.6.2
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @require			https://code.jquery.com/jquery-1.7.1.min.js
 // @require			https://raw.githubusercontent.com/goldfire/howler.js/master/howler.min.js
@@ -22,6 +22,7 @@ if( !nomultirun() ) { throw new Error("There is already a script attached! Stopp
 var UnixNow_Seconds = function() { return Math.round((new Date()).getTime() / 1000); };
 var dochirp = true;
 var waitingforchirp=false;
+var workaround_mode = 2;
 
 $(document).ready(function() {
 
@@ -50,7 +51,7 @@ function start() {
 
 function chirp(){
   var notification = new Audio(GM_getResourceURL("chirpnotific1"));
-  notification.volume = 0.1;
+  notification.volume = 0.3;
   var lastchirp = Number(getCookie("lastchirpactivitystream"));
 
   if( (UnixNow_Seconds > (lastchirp+30)) || !(lastchirp) ) {
@@ -170,56 +171,108 @@ function activitystream_workaround_update() {
 //console.log("OLDipsStreamFirstItem.querySelector('.ipsStreamItem_title a')"+OLDipsStreamFirstItem.querySelector(".ipsStreamItem_title a"));
 
   //console.log("OLDipsStreamFirstItem:"+OLDipsStreamFirstItem);
+if( workaround_mode == 1 ) {
+  //console.log("workaround mode 1 called");
 
-    GM_xmlhttpRequest({
-       url: window.location.href,
-       method: "GET",
-       synchronous: false,
-       headers: { "Accept": "text/plain" },
-       timeout: 5000,
-       onload: function(response) {
-        //  console.log("HTTP response received!");
-           rspDoc= (new DOMParser()).parseFromString( response.responseText, 'text/html');
-           if( rspDoc.body.querySelector("ol.ipsStream > li.ipsStreamItem .ipsStreamItem_title a").toString().localeCompare(OLDipsStreamFirstItem.querySelector(".ipsStreamItem_title a").toString()) !== 0 )
-           {
-          //   console.log("http request finished > newest item isn't old item");
-             NEWipsStreamItems = rspDoc.body.querySelectorAll("ol.ipsStream > li.ipsStreamItem");
-            // console.log("NEWipsStreamItems.length: "+NEWipsStreamItems.length );
-             var addactivities_cache = [];
-             var i_old = 0;
-             if( NEWipsStreamItems.length >= 1 ) {
-               for(i=0; i<NEWipsStreamItems.length-1; i++) {
-              //   i_old = i_old + 1;
-                 console.log("inside for loop, i: "+i);
-                  var oldItemLink = OLDipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
-                  var newItemLink = NEWipsStreamItems[i].querySelector(".ipsStreamItem_title a").toString();
-                ///  console.log("oldItemLink: "+oldItemLink);
-                //  console.log("newItemLink: "+newItemLink);
+  GM_xmlhttpRequest({
+     url: window.location.href,
+     method: "GET",
+     synchronous: false,
+     headers: { "Accept": "text/plain" },
+     timeout: 10000,
+     onload: function(response) {
+      //  console.log("HTTP response received!");
+         rspDoc= (new DOMParser()).parseFromString( response.responseText, 'text/html');
+         if( rspDoc.body.querySelector("ol.ipsStream > li.ipsStreamItem .ipsStreamItem_title a").toString().localeCompare(OLDipsStreamFirstItem.querySelector(".ipsStreamItem_title a").toString()) !== 0 )
+         {
+        //   console.log("http request finished > newest item isn't old item");
+           NEWipsStreamItems = rspDoc.body.querySelectorAll("ol.ipsStream > li.ipsStreamItem");
+          // console.log("NEWipsStreamItems.length: "+NEWipsStreamItems.length );
+           var addactivities_cache = [];
+           var i_old = 0;
+           if( NEWipsStreamItems.length >= 1 ) {
+             for(i=0; i<NEWipsStreamItems.length-1; i++) {
+            //   i_old = i_old + 1;
+               console.log("inside for loop, i: "+i);
+                var oldItemLink = OLDipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
+                var newItemLink = NEWipsStreamItems[i].querySelector(".ipsStreamItem_title a").toString();
+              ///  console.log("oldItemLink: "+oldItemLink);
+              //  console.log("newItemLink: "+newItemLink);
 
-                 if( oldItemLink.localeCompare(newItemLink) !== 0 ) {
-                //   console.log("trying to insert activity");
-                  //console.log("trying to insert activity - NEWipsStreamItems[i].outerHTML: "+NEWipsStreamItems[i].innerHTML+" // OLDipsStreamFirstItem: "+OLDipsStreamFirstItem);
-                  addactivities_cache.push( NEWipsStreamItems[i].outerHTML );
-                  //i_old = i_old - 1;
-                 } else {
-              //     console.log("inside for loop, breaking @ i: "+i);
-                   break;
-                 }
+               if( oldItemLink.localeCompare(newItemLink) !== 0 ) {
+              //   console.log("trying to insert activity");
+                //console.log("trying to insert activity - NEWipsStreamItems[i].outerHTML: "+NEWipsStreamItems[i].innerHTML+" // OLDipsStreamFirstItem: "+OLDipsStreamFirstItem);
+                addactivities_cache.push( NEWipsStreamItems[i].outerHTML );
+                //i_old = i_old - 1;
+               } else {
+            //     console.log("inside for loop, breaking @ i: "+i);
+                 break;
                }
-            //  console.log("cache anwenden: ");
-               addactivities_cache.forEach(function (this_activity) {
-              //   console.log("cache anwenden this activity: "+this_activity);
-                 $(this_activity).insertBefore( OLDipsStreamFirstItem );
-               });
-               if(addactivities_cache.length >= 1) {chirp();}
-            //   console.log("cache angewendet.");
-
              }
+          //  console.log("cache anwenden: ");
+             addactivities_cache.forEach(function (this_activity) {
+            //   console.log("cache anwenden this activity: "+this_activity);
+               $(this_activity).insertBefore( OLDipsStreamFirstItem );
+             });
+             if(addactivities_cache.length >= 1) {chirp();}
+          //   console.log("cache angewendet.");
 
-           } else {
-             //console.log("http request finished > newest item is old item");
            }
-         //console.log("HTTP response parsed");
-       }
-     });
+
+         } else {
+           //console.log("http request finished > newest item is old item");
+         }
+       //console.log("HTTP response parsed");
+     }
+   });
+ } else if ( workaround_mode == 2 ) {
+  // console.log("workaround mode 2 called");
+   GM_xmlhttpRequest({
+      url: window.location.href,
+      method: "GET",
+      synchronous: false,
+      headers: { "Accept": "text/plain" },
+      timeout: 10000,
+      onload: function(response) {
+       //  console.log("HTTP response received!");
+          rspDoc= (new DOMParser()).parseFromString( response.responseText, 'text/html');
+          if( rspDoc.body.querySelector("ol.ipsStream > li.ipsStreamItem .ipsStreamItem_title a").toString().localeCompare(OLDipsStreamFirstItem.querySelector(".ipsStreamItem_title a").toString()) !== 0 )
+          {
+         //   console.log("http request finished > newest item isn't old item");
+            NEWipsStreamItems = rspDoc.body.querySelectorAll("ol.ipsStream > li.ipsStreamItem");
+           // console.log("NEWipsStreamItems.length: "+NEWipsStreamItems.length );
+            var addactivities_cache = [];
+            var i_old = 0;
+            if( NEWipsStreamItems.length >= 1 ) {
+              for(i=0; i<NEWipsStreamItems.length-1; i++) {
+             //   i_old = i_old + 1;
+                console.log("inside for loop, i: "+i);
+                 var oldItemLink = OLDipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
+                 var newItemLink = NEWipsStreamItems[i].querySelector(".ipsStreamItem_title a").toString();
+               ///  console.log("oldItemLink: "+oldItemLink);
+               //  console.log("newItemLink: "+newItemLink);
+
+                if( oldItemLink.localeCompare(newItemLink) !== 0 ) {
+                  oldIpsStreamContainer = document.body.querySelector("ol.ipsStream");
+                  newIpsStreamContainer = rspDoc.body.querySelector("ol.ipsStream");
+
+                  $(newIpsStreamContainer).insertBefore( oldIpsStreamContainer );
+                  $(oldIpsStreamContainer).remove();
+                  chirp();
+                  break;
+                } else {
+             //     console.log("inside for loop, breaking @ i: "+i);
+                  break;
+                }
+              }
+            }
+
+          } else {
+            //console.log("http request finished > newest item is old item");
+          }
+        //console.log("HTTP response parsed");
+      }
+    });
+ }
+
 }
