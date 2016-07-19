@@ -14,6 +14,7 @@ All audio-content/media content (exceptions of this are defined below, in the th
 * Multiple of the project's scripts make use of third-party libraries, these libraries are not directly implemented into the project but rather are automatically loaded from their licensed distributors. These libraries may or may not fall under this project's license terms and may or may not be related to this project's author(s).
   * [**dat.gui Library**](https://github.com/dataarts/dat.gui) Licensed under the Apache License 2.0
   * [**JQuery Library**](https://jquery.org) Licensed under the MIT License
+  * [**HowlerJS Library**](https://github.com/goldfire/howler.js) Licensed under [**custom license**](https://raw.githubusercontent.com/goldfire/howler.js/master/LICENSE.md)
 * It may happen that there is third-party-media-content (image-files, sound-files) linked within the code, they do not fall into the definition of being included part of the project (if not part of this repository) and fall under the property and publishing rights/restrictions of their respective publisher and/or rightholder.
 * Functions with out-commented links are probably copied from those sources. These functions fall under the license terms defined by the respective owner/publisher of these snippets.
 
