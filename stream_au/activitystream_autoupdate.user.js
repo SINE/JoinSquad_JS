@@ -1,19 +1,26 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate ALPHA
 // @namespace   github.com/SINE
-// @version     1.6.3
+// @version     1.7.3
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
-// @require			https://code.jquery.com/jquery-1.7.1.min.js
-// @require			https://raw.githubusercontent.com/goldfire/howler.js/master/dist/howler.min.js
 // @resource		chirpnotific1 https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/media/soundeffect-pop.wav
+// @resource		customCSS https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/css/datguicustom.css
+// @require			https://code.jquery.com/jquery-2.2.0.min.js
+// @require			https://raw.githubusercontent.com/goldfire/howler.js/master/dist/howler.min.js
+// @require			https://raw.githubusercontent.com/dataarts/dat.gui/8f0eba8ade601ec401a940d36caf4bd1fffaeb65/build/dat.gui.js
 // @include     http://forums.joinsquad.com/discover/*
 // @grant       GM_getResourceURL
+// @grant       GM_getResourceText
 // @grant       GM_xmlhttpRequest
+// @grant       GM_setValue
+// @grant       GM_getValue
+// @grant       GM_addStyle
 // @run-at			document-end
 // @noframe
 // ==/UserScript==
 
 this.$ = this.jQuery = jQuery.noConflict(true);
+var notification = new Audio(GM_getResourceURL("chirpnotific1"));
 
 console.log("ActivitystreamAutoUpdate script start");
 if( !nomultirun() ) { throw new Error("There is already a script attached! Stopping."); }
@@ -23,9 +30,13 @@ var UnixNow_Seconds = function() { return Math.round((new Date()).getTime() / 10
 var dochirp = true;
 var waitingforchirp=false;
 var workaround_mode = 2;
+var gui;
+var Settings_ASAU;
 
 $(document).ready(function() {
+  GM_addStyle(	GM_getResourceText("customCSS")	);
 
+  prepare_settings_gui();
   start();
 
 });
@@ -34,8 +45,7 @@ $(document).ready(function() {
 function start() {
   activitystream_noautoupdate = (document.querySelector("#elStreamUpdateMsg").className.search("ipsHide") > -1);
   if( activitystream_noautoupdate ) {
-    //alert("activitystream no autoupdate, enabling interval");
-     setInterval(function(){activitystream_workaround_update();}, 10000);
+     setInterval(function(){activitystream_workaround_update();}, (1000*Settings_ASAU.SecondsRefreshNonDefaultStream));
   }
 
   var listWrapper = document.getElementsByClassName("ipsStream")[0];
@@ -46,12 +56,94 @@ function start() {
   }
 }
 
+function prepare_settings_gui() {
+  console.log("prepare_settings_gui checkpoint #1");
+
+  DefaultSettings_ASAU_template = function() {
+    this.PopVolume = 30;
+    this.SecondsRefreshNonDefaultStream = 45;
+    this.DoHarshUpdateDefaultStream = false;
+  };
+  var DefaultSettings_ASAU = new DefaultSettings_ASAU_template();
+
+  if( !GM_getValue("Settings_ASAU",0) )
+    Settings_ASAU = JSON.parse(JSON.stringify(DefaultSettings_ASAU));
+  else
+    Settings_ASAU = GM_getValue("Settings_ASAU");
+
+  gui = new dat.GUI({autoPlace: false});
+  //console.log("prepare_settings_gui checkpoint #4");
+
+  var gui_PopVolume = gui.add(Settings_ASAU, 'PopVolume', 0, 100);
+  var gui_SecondsRefreshNonDefaultStream = gui.add(Settings_ASAU, 'SecondsRefreshNonDefaultStream', 3, 180);
+  //var gui_DoHarshUpdateDefaultStream = gui.add(Settings_ASAU, 'DoHarshUpdateDefaultStream');
+
+  var guiContainer;
+  var settingsContainer;
+
+  if( !document.body.querySelector(".settingsContainer") ) {
+    settingsContainer = document.createElement("div");
+    settingsContainer.classList.add("settingsContainer");
+    $(settingsContainer).insertBefore( $("#elMobileNav") );
+    console.log("create_settings_gui checkpoint #3");
+
+    var settingsContainerToggleButton = document.createElement("div");
+    guiContainer = document.createElement("div");
+    guiContainer.classList.add("guiContainer");
+    guiContainer.appendChild(gui.domElement);
+
+    settingsContainerToggleButton.classList.add("ToggleSwitch","toggled");
+
+    settingsContainer.appendChild(guiContainer);
+    settingsContainer.appendChild(settingsContainerToggleButton);
+
+    $( ".settingsContainer .close-button" ).remove();
+    $(settingsContainerToggleButton).toggleClass("toggled");
+    $(".guiContainer > *").slideToggle(1);
+
+    $(settingsContainerToggleButton).click(function(){
+      $(this).toggleClass("toggled");
+      $(".guiContainer > *").slideToggle(500);
+    });
+
+  } else {
+
+    guiContainer = document.body.querySelector(".guiContainer");
+    guiContainer.appendChild(gui.domElement);
+    $( ".guiContainer .close-button" ).remove();
+    $(".guiContainer > *").slideUp(1);
+  }
+
+  gui_PopVolume.onFinishChange(function(value) {
+    console.log("PopVolume new value "+value);
+    Settings_ASAU.PopVolume = value;
+    GM_setValue("Settings_ASAU", JSON.parse(JSON.stringify(Settings_ASAU)) );
+
+    notification.volume = (value/100);
+  });
+
+  gui_SecondsRefreshNonDefaultStream.onFinishChange(function(value) {
+    console.log("gui_SecondsRefreshNonDefaultStream new value "+value);
+    Settings_ASAU.gui_SecondsRefreshNonDefaultStream = value;
+    GM_setValue("Settings_ASAU", JSON.parse(JSON.stringify(Settings_ASAU)) );
+  });
+
+/*
+  gui_DoHarshUpdateDefaultStream.onFinishChange(function(value) {
+    console.log("gui_DoHarshUpdateDefaultStream new value "+value);
+    Settings_ASAU.gui_DoHarshUpdateDefaultStream = value;
+    GM_setValue("Settings_ASAU", JSON.parse(JSON.stringify(Settings_ASAU)) );
+  });*/
+
+
+}
+
 /** ********************************************** **/
 /**                 FUNCTIONS                      **/
 
 function chirp(){
   var notification = new Audio(GM_getResourceURL("chirpnotific1"));
-  notification.volume = 0.3;
+  notification.volume = (Settings_ASAU.PopVolume/100);
   var lastchirp = Number(getCookie("lastchirpactivitystream"));
 
   if( (UnixNow_Seconds > (lastchirp+30)) || !(lastchirp) ) {
