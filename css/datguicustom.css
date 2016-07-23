@@ -1,0 +1,69 @@
+.settingsContainer {
+  min-height: 50px !important;
+  min-width: 50px !important;
+  height: auto;
+  margin-right: 50px;
+  width: 300px;
+  display: block;
+  position: absolute;
+  right: 200px;
+  border-top: 2px solid #00D2FF;
+  padding: 0px 5px 5px;
+  z-index: 9999;
+}
+.settingsContainer > .ToggleSwitch {
+    display: block;
+    height: 30px;
+    width: 30px;
+    margin-right: auto;
+    margin-left: auto;
+    border-radius: 50%;
+    background-color: rgba(0, 172, 228, 1);
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,.15);
+    margin-top: -10px;
+    cursor: pointer;
+    opacity: 0.5;
+}
+.settingsContainer > .ToggleSwitch.toggled {
+  background-color: rgba(164, 0, 15, 1) !important;
+}
+
+.settingsContainer > .ToggleSwitch:hover {
+    opacity: 1;
+    height: 28px; width: 28px;
+}
+
+.ToggleSwitch span {
+    color: rgb(228, 228, 228);
+    height: 20px;
+    position: relative;
+    margin: auto;
+    display: block;
+    width: 20px;
+    font-size: 32px;
+    line-height: 1em;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+}
+.ToggleSwitch:hover span {
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+.settingsContainer .guiContainer .dg.main {
+  margin-bottom: -20px;
+  width: 100% !important;
+}
+.settingsContainer .guiContainer .dg.main {
+  border-bottom: 20px solid #2A2A2A;
+}
+/*
+.settingsContainerCollapsed .dg {
+  display: none;
+}
+
+.settingsContainerCollapsed {
+  height: 50px !important;
+  width: 50px !important;
+  padding 0 !important;
+}
+*/
