@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate ALPHA
 // @namespace   github.com/SINE
-// @version     1.7.3
+// @version     1.7.5
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @resource		chirpnotific1 https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/media/soundeffect-pop.wav
 // @resource		customCSS https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/css/datguicustom.css
 // @require			https://code.jquery.com/jquery-2.2.0.min.js
-// @require			https://raw.githubusercontent.com/goldfire/howler.js/master/dist/howler.min.js
-// @require			https://raw.githubusercontent.com/dataarts/dat.gui/8f0eba8ade601ec401a940d36caf4bd1fffaeb65/build/dat.gui.js
+// @require			https://raw.githubusercontent.com/goldfire/howler.js/v1.1.29/howler.js
+// @require			https://raw.githubusercontent.com/dataarts/dat.gui/v0.5.1/build/dat.gui.min.js
 // @include     http://forums.joinsquad.com/discover/*
 // @grant       GM_getResourceURL
 // @grant       GM_getResourceText
@@ -45,7 +45,7 @@ $(document).ready(function() {
 function start() {
   activitystream_noautoupdate = (document.querySelector("#elStreamUpdateMsg").className.search("ipsHide") > -1);
   if( activitystream_noautoupdate ) {
-     setInterval(function(){activitystream_workaround_update();}, (1000*Settings_ASAU.SecondsRefreshNonDefaultStream));
+     setInterval(function(){activitystream_workaround_update();}, (1000*Settings_ASAU.SecondsRefresh));
   }
 
   var listWrapper = document.getElementsByClassName("ipsStream")[0];
@@ -61,7 +61,7 @@ function prepare_settings_gui() {
 
   DefaultSettings_ASAU_template = function() {
     this.PopVolume = 30;
-    this.SecondsRefreshNonDefaultStream = 45;
+    this.SecondsRefresh = 45;
     this.DoHarshUpdateDefaultStream = false;
   };
   var DefaultSettings_ASAU = new DefaultSettings_ASAU_template();
@@ -75,7 +75,7 @@ function prepare_settings_gui() {
   //console.log("prepare_settings_gui checkpoint #4");
 
   var gui_PopVolume = gui.add(Settings_ASAU, 'PopVolume', 0, 100);
-  var gui_SecondsRefreshNonDefaultStream = gui.add(Settings_ASAU, 'SecondsRefreshNonDefaultStream', 3, 180);
+  var gui_SecondsRefresh = gui.add(Settings_ASAU, 'SecondsRefresh', 30, 300);
   //var gui_DoHarshUpdateDefaultStream = gui.add(Settings_ASAU, 'DoHarshUpdateDefaultStream');
 
   var guiContainer;
@@ -120,11 +120,12 @@ function prepare_settings_gui() {
     GM_setValue("Settings_ASAU", JSON.parse(JSON.stringify(Settings_ASAU)) );
 
     notification.volume = (value/100);
+    chirp();
   });
 
-  gui_SecondsRefreshNonDefaultStream.onFinishChange(function(value) {
-    console.log("gui_SecondsRefreshNonDefaultStream new value "+value);
-    Settings_ASAU.gui_SecondsRefreshNonDefaultStream = value;
+  gui_SecondsRefresh.onFinishChange(function(value) {
+    console.log("gui_SecondsRefresh new value "+value);
+    Settings_ASAU.gui_SecondsRefresh = value;
     GM_setValue("Settings_ASAU", JSON.parse(JSON.stringify(Settings_ASAU)) );
   });
 
