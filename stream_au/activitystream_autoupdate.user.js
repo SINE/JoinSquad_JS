@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate ALPHA
 // @namespace   github.com/SINE
-// @version     1.7.6
+// @version     1.7.7
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @resource		chirpnotific1 https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/media/soundeffect-pop.wav
 // @resource		customCSS https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/css/datguicustom.css
@@ -272,11 +272,6 @@ function activitystream_workaround_update() {
             var addactivities_cache = [];
             var i_old = 0;
             if( NEWipsStreamItems.length >= 1 ) {
-              for(i=0; i<NEWipsStreamItems.length-1; i++) {
-                console.log("inside for loop, i: "+i);
-                 var oldItemLink = OLDipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
-                 var newItemLink = NEWipsStreamItems[i].querySelector(".ipsStreamItem_title a").toString();
-
 
               var newest_item = NEWipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
               var liste_alter_items = [];
@@ -287,6 +282,11 @@ function activitystream_workaround_update() {
 
               if(liste_alter_items.indexOf(newest_item) >= 0) refreshquietly = true;
               else refreshquietly = false;
+
+              for(i=0; i<NEWipsStreamItems.length-1; i++) {
+                console.log("inside for loop, i: "+i);
+                 var oldItemLink = OLDipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
+                 var newItemLink = NEWipsStreamItems[i].querySelector(".ipsStreamItem_title a").toString();
 
               if( oldItemLink.localeCompare(newItemLink) !== 0 ) {
                 oldIpsStreamContainer = document.body.querySelector("ol.ipsStream");
