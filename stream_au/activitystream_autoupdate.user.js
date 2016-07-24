@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate ALPHA
 // @namespace   github.com/SINE
-// @version     1.7.5
+// @version     1.7.6
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @resource		chirpnotific1 https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/media/soundeffect-pop.wav
 // @resource		customCSS https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/css/datguicustom.css
@@ -32,6 +32,7 @@ var waitingforchirp=false;
 var workaround_mode = 2;
 var gui;
 var Settings_ASAU;
+var refreshquietly;
 
 $(document).ready(function() {
   GM_addStyle(	GM_getResourceText("customCSS")	);
@@ -57,7 +58,6 @@ function start() {
 }
 
 function prepare_settings_gui() {
-  console.log("prepare_settings_gui checkpoint #1");
 
   DefaultSettings_ASAU_template = function() {
     this.PopVolume = 30;
@@ -72,10 +72,9 @@ function prepare_settings_gui() {
     Settings_ASAU = GM_getValue("Settings_ASAU");
 
   gui = new dat.GUI({autoPlace: false});
-  //console.log("prepare_settings_gui checkpoint #4");
 
   var gui_PopVolume = gui.add(Settings_ASAU, 'PopVolume', 0, 100);
-  var gui_SecondsRefresh = gui.add(Settings_ASAU, 'SecondsRefresh', 30, 300);
+  var gui_SecondsRefresh = gui.add(Settings_ASAU, 'SecondsRefresh', 5, 300);
   //var gui_DoHarshUpdateDefaultStream = gui.add(Settings_ASAU, 'DoHarshUpdateDefaultStream');
 
   var guiContainer;
@@ -85,7 +84,6 @@ function prepare_settings_gui() {
     settingsContainer = document.createElement("div");
     settingsContainer.classList.add("settingsContainer");
     $(settingsContainer).insertBefore( $("#elMobileNav") );
-    console.log("create_settings_gui checkpoint #3");
 
     var settingsContainerToggleButton = document.createElement("div");
     guiContainer = document.createElement("div");
@@ -115,7 +113,6 @@ function prepare_settings_gui() {
   }
 
   gui_PopVolume.onFinishChange(function(value) {
-    console.log("PopVolume new value "+value);
     Settings_ASAU.PopVolume = value;
     GM_setValue("Settings_ASAU", JSON.parse(JSON.stringify(Settings_ASAU)) );
 
@@ -124,7 +121,6 @@ function prepare_settings_gui() {
   });
 
   gui_SecondsRefresh.onFinishChange(function(value) {
-    console.log("gui_SecondsRefresh new value "+value);
     Settings_ASAU.gui_SecondsRefresh = value;
     GM_setValue("Settings_ASAU", JSON.parse(JSON.stringify(Settings_ASAU)) );
   });
@@ -159,7 +155,7 @@ function chirp(){
 
 function handleMutations(mutations) {
 	mutations.forEach(function (mutation) {
-		console.log(	"---mutation---: \nadded nodes: "+mutation.addedNodes+"\nremoved nodes: "+mutation.removedNodes+"\ntype:"+mutation.type+"\n---mutation info end---");
+		//console.log(	"---mutation---: \nadded nodes: "+mutation.addedNodes+"\nremoved nodes: "+mutation.removedNodes+"\ntype:"+mutation.type+"\n---mutation info end---");
 		if (!mutation.addedNodes || mutation.addedNodes.length === 0) {	console.log("mutation exception, length null or no added nodes! returning!");	return;	}
 		else console.log("added nodes length: "+mutation.addedNodes.length);
 
@@ -168,14 +164,14 @@ function handleMutations(mutations) {
         if (node.nodeName.toLowerCase() === 'li') {
           pre_handle_founditem(node);
 				}  else {
-          console.log( "nodename not li, but: "+node.nodeName.toLowerCase() );
+          //console.log( "nodename not li, but: "+node.nodeName.toLowerCase() );
         }
 			});
 		} else {
       if (node.nodeName.toLowerCase() === 'li') {
         pre_handle_founditem(node);
       } else {
-        console.log( "nodename not li, but: "+node.nodeName.toLowerCase() );
+      //  console.log( "nodename not li, but: "+node.nodeName.toLowerCase() );
       }
     }
 	});
@@ -260,66 +256,7 @@ function activitystream_workaround_update() {
   var OLDipsStreamItems = document.body.querySelectorAll("ol.ipsStream > li.ipsStreamItem");
   var OLDipsStreamFirstItem = OLDipsStreamItems[0];
 
-//console.log("oldipsStreamFirstItem: "+OLDipsStreamFirstItem);
-//console.log("OLDipsStreamFirstItem.querySelector('.ipsStreamItem_title a')"+OLDipsStreamFirstItem.querySelector(".ipsStreamItem_title a"));
 
-  //console.log("OLDipsStreamFirstItem:"+OLDipsStreamFirstItem);
-if( workaround_mode == 1 ) {
-  //console.log("workaround mode 1 called");
-
-  GM_xmlhttpRequest({
-     url: window.location.href,
-     method: "GET",
-     synchronous: false,
-     headers: { "Accept": "text/plain" },
-     timeout: 10000,
-     onload: function(response) {
-      //  console.log("HTTP response received!");
-         rspDoc= (new DOMParser()).parseFromString( response.responseText, 'text/html');
-         if( rspDoc.body.querySelector("ol.ipsStream > li.ipsStreamItem .ipsStreamItem_title a").toString().localeCompare(OLDipsStreamFirstItem.querySelector(".ipsStreamItem_title a").toString()) !== 0 )
-         {
-        //   console.log("http request finished > newest item isn't old item");
-           NEWipsStreamItems = rspDoc.body.querySelectorAll("ol.ipsStream > li.ipsStreamItem");
-          // console.log("NEWipsStreamItems.length: "+NEWipsStreamItems.length );
-           var addactivities_cache = [];
-           var i_old = 0;
-           if( NEWipsStreamItems.length >= 1 ) {
-             for(i=0; i<NEWipsStreamItems.length-1; i++) {
-            //   i_old = i_old + 1;
-               console.log("inside for loop, i: "+i);
-                var oldItemLink = OLDipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
-                var newItemLink = NEWipsStreamItems[i].querySelector(".ipsStreamItem_title a").toString();
-              ///  console.log("oldItemLink: "+oldItemLink);
-              //  console.log("newItemLink: "+newItemLink);
-
-               if( oldItemLink.localeCompare(newItemLink) !== 0 ) {
-              //   console.log("trying to insert activity");
-                //console.log("trying to insert activity - NEWipsStreamItems[i].outerHTML: "+NEWipsStreamItems[i].innerHTML+" // OLDipsStreamFirstItem: "+OLDipsStreamFirstItem);
-                addactivities_cache.push( NEWipsStreamItems[i].outerHTML );
-                //i_old = i_old - 1;
-               } else {
-            //     console.log("inside for loop, breaking @ i: "+i);
-                 break;
-               }
-             }
-          //  console.log("cache anwenden: ");
-             addactivities_cache.forEach(function (this_activity) {
-            //   console.log("cache anwenden this activity: "+this_activity);
-               $(this_activity).insertBefore( OLDipsStreamFirstItem );
-             });
-             if(addactivities_cache.length >= 1) {chirp();}
-          //   console.log("cache angewendet.");
-
-           }
-
-         } else {
-           //console.log("http request finished > newest item is old item");
-         }
-       //console.log("HTTP response parsed");
-     }
-   });
- } else if ( workaround_mode == 2 ) {
-  // console.log("workaround mode 2 called");
    GM_xmlhttpRequest({
       url: window.location.href,
       method: "GET",
@@ -327,45 +264,47 @@ if( workaround_mode == 1 ) {
       headers: { "Accept": "text/plain" },
       timeout: 10000,
       onload: function(response) {
-       //  console.log("HTTP response received!");
           rspDoc= (new DOMParser()).parseFromString( response.responseText, 'text/html');
           if( rspDoc.body.querySelector("ol.ipsStream > li.ipsStreamItem .ipsStreamItem_title a").toString().localeCompare(OLDipsStreamFirstItem.querySelector(".ipsStreamItem_title a").toString()) !== 0 )
           {
-         //   console.log("http request finished > newest item isn't old item");
             NEWipsStreamItems = rspDoc.body.querySelectorAll("ol.ipsStream > li.ipsStreamItem");
-           // console.log("NEWipsStreamItems.length: "+NEWipsStreamItems.length );
+
             var addactivities_cache = [];
             var i_old = 0;
             if( NEWipsStreamItems.length >= 1 ) {
               for(i=0; i<NEWipsStreamItems.length-1; i++) {
-             //   i_old = i_old + 1;
                 console.log("inside for loop, i: "+i);
                  var oldItemLink = OLDipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
                  var newItemLink = NEWipsStreamItems[i].querySelector(".ipsStreamItem_title a").toString();
-               ///  console.log("oldItemLink: "+oldItemLink);
-               //  console.log("newItemLink: "+newItemLink);
 
-                if( oldItemLink.localeCompare(newItemLink) !== 0 ) {
-                  oldIpsStreamContainer = document.body.querySelector("ol.ipsStream");
-                  newIpsStreamContainer = rspDoc.body.querySelector("ol.ipsStream");
 
-                  $(newIpsStreamContainer).insertBefore( oldIpsStreamContainer );
-                  $(oldIpsStreamContainer).remove();
+              var newest_item = NEWipsStreamItems[0].querySelector(".ipsStreamItem_title a").toString();
+              var liste_alter_items = [];
+
+              makeArray(OLDipsStreamItems).forEach(function(node){
+                liste_alter_items.push(node.querySelector(".ipsStreamItem_title a").toString());
+              });
+
+              if(liste_alter_items.indexOf(newest_item) >= 0) refreshquietly = true;
+              else refreshquietly = false;
+
+              if( oldItemLink.localeCompare(newItemLink) !== 0 ) {
+                oldIpsStreamContainer = document.body.querySelector("ol.ipsStream");
+                newIpsStreamContainer = rspDoc.body.querySelector("ol.ipsStream");
+
+                $(newIpsStreamContainer).insertBefore( oldIpsStreamContainer );
+                $(oldIpsStreamContainer).remove();
+                if(!refreshquietly)
                   chirp();
-                  break;
-                } else {
-             //     console.log("inside for loop, breaking @ i: "+i);
-                  break;
-                }
+                break;
+              } else {
+                break;
               }
             }
-
-          } else {
-            //console.log("http request finished > newest item is old item");
           }
-        //console.log("HTTP response parsed");
-      }
-    });
- }
+        } else {
+        }
+    }
+  });
 
 }
