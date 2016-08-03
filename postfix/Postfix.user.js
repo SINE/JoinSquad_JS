@@ -2,6 +2,7 @@
 // @name        JoinSQUAD Postfix
 // @namespace   github.com/SINE
 // @include     http://forums.joinsquad.com/*
+//@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/postfix/postfix.meta.js
 // @version     1.0
 // @run-at			document-end
 // @priority    9002
