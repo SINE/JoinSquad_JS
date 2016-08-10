@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate ALPHA
 // @namespace   github.com/SINE
-// @version     1.7.7
+// @version     1.7.8
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
 // @resource		chirpnotific1 https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/media/soundeffect-pop.wav
 // @resource		customCSS https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/css/datguicustom.css
@@ -74,7 +74,7 @@ function prepare_settings_gui() {
   gui = new dat.GUI({autoPlace: false});
 
   var gui_PopVolume = gui.add(Settings_ASAU, 'PopVolume', 0, 100);
-  var gui_SecondsRefresh = gui.add(Settings_ASAU, 'SecondsRefresh', 5, 300);
+  var gui_SecondsRefresh = gui.add(Settings_ASAU, 'SecondsRefresh', 15, 300);
   //var gui_DoHarshUpdateDefaultStream = gui.add(Settings_ASAU, 'DoHarshUpdateDefaultStream');
 
   var guiContainer;
