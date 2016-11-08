@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name        JoinSquad Stream Autoupdate ALPHA
 // @namespace   github.com/SINE
-// @version     1.7.8
+// @version     1.8.0
 //@updateURL   https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/stream_au/stream_au.meta.js
-// @resource		chirpnotific1 https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/media/soundeffect-pop.wav
 // @resource		customCSS https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/css/datguicustom.css
 // @require			https://code.jquery.com/jquery-2.2.0.min.js
-// @require			https://raw.githubusercontent.com/goldfire/howler.js/v1.1.29/howler.js
+// @require			https://raw.githubusercontent.com/goldfire/howler.js/v2.0.1/dist/howler.js
 // @require			https://raw.githubusercontent.com/dataarts/dat.gui/v0.5.1/build/dat.gui.min.js
 // @include     http://forums.joinsquad.com/discover/*
 // @grant       GM_getResourceURL
@@ -20,7 +19,10 @@
 // ==/UserScript==
 
 this.$ = this.jQuery = jQuery.noConflict(true);
-var notification = new Audio(GM_getResourceURL("chirpnotific1"));
+var notification = new Howl({
+   src: ['https://raw.githubusercontent.com/SINE/JoinSquad_JS/master/media/soundeffect-pop.wav'],
+   volume: 0.0
+});
 
 console.log("ActivitystreamAutoUpdate script start");
 if( !nomultirun() ) { throw new Error("There is already a script attached! Stopping."); }
@@ -116,7 +118,6 @@ function prepare_settings_gui() {
     Settings_ASAU.PopVolume = value;
     GM_setValue("Settings_ASAU", JSON.parse(JSON.stringify(Settings_ASAU)) );
 
-    notification.volume = (value/100);
     chirp();
   });
 
@@ -139,8 +140,9 @@ function prepare_settings_gui() {
 /**                 FUNCTIONS                      **/
 
 function chirp(){
-  var notification = new Audio(GM_getResourceURL("chirpnotific1"));
-  notification.volume = (Settings_ASAU.PopVolume/100);
+
+
+  notification.volume(Settings_ASAU.PopVolume/100);
   var lastchirp = Number(getCookie("lastchirpactivitystream"));
 
   if( (UnixNow_Seconds > (lastchirp+30)) || !(lastchirp) ) {
